@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BLAZE PREMIUM CLEAN</title>
+    <style>
+        :root { 
+            --accent: #6c5ce7; 
+            --bg: #050505; 
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --green: #00db8b;
+        }
+
+        /* Убираем обводку и стандартное подсвечивание клика */
+        * { 
+            box-sizing: border-box; 
+            -webkit-user-select: none; 
+            user-select: none; 
+            outline: none !important; 
+            -webkit-tap-highlight-color: transparent; /* Убирает синий квадрат на мобилках */
+            transition: all 0.2s ease; 
+        }
+
+        input { 
+            -webkit-user-select: text; 
+            user-select: text; 
+            outline: none;
+            -webkit-appearance: none; /* Убирает стандартные тени iOS */
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--bg);
+            background: radial-gradient(circle at 50% -20%, #1e1e2f 0%, #050505 100%);
+            color: #fff; height: 100vh; margin: 0; display: flex; flex-direction: column; overflow: hidden; 
+        }
+
+        header { 
+            padding: 18px 20px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 100;
+        }
+        .h-title { 
+            font-weight: 900; font-size: 16px; letter-spacing: 2px; 
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .on-btn { 
+            background: var(--glass); border: 1px solid var(--glass-border);
+            color: var(--green); padding: 6px 14px; border-radius: 20px; 
+            font-size: 11px; font-weight: 800; cursor: pointer;
+        }
+
+        #chat { 
+            flex: 1; overflow-y: auto; padding: 20px; 
+            display: flex; flex-direction: column; gap: 16px; 
+        }
+        #chat::-webkit-scrollbar { width: 0px; } /* Скрываем скролл для красоты */
+
+        .m { display: flex; align-items: flex-end; gap: 10px; max-width: 85%; animation: msgSlide 0.3s ease; }
+        @keyframes msgSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .my { align-self: flex-end; flex-direction: row-reverse; }
+        
+        .av { width: 38px; height: 38px; border-radius: 12px; object-fit: cover; border: 1px solid var(--glass-border); cursor: pointer; }
+
+        .bb { 
+            padding: 12px 16px; border-radius: 20px 20px 20px 5px; 
+            background: var(--glass); border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px); width: fit-content;
+        }
+        .my .bb { 
+            background: linear-gradient(135deg, var(--accent), #4834d4);
+            border: none; border-radius: 20px 20px 5px 20px;
+        }
+
+        .nk { font-weight: 800; font-size: 12px; color: var(--accent); display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+        .my .nk { color: rgba(255,255,255,0.8); }
+        .vi { width: 14px; height: 14px; }
+
+        #ia { 
+            padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); 
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(20px);
+            display: flex; gap: 12px; border-top: 1px solid var(--glass-border);
+        }
+        input { 
+            background: var(--glass); border: 1px solid var(--glass-border);
+            color: #fff; padding: 14px 20px; border-radius: 18px; 
+            flex: 1; font-size: 15px; 
+        }
+        
+        .s-btn { 
+            background: var(--accent); color: #fff; border: none; 
+            width: 48px; height: 48px; border-radius: 16px; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer;
+        }
+        .s-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            display: none; align-items: center; justify-content: center; 
+            z-index: 10000; backdrop-filter: blur(10px);
+        }
+        .bx { 
+            background: #111; padding: 30px; border-radius: 30px; 
+            text-align: center; border: 1px solid var(--glass-border); 
+            width: 85%; max-width: 320px;
+        }
+        .bx button { 
+            width: 100%; height: 50px; border-radius: 15px; border: none;
+            background: var(--accent); color: #fff; font-weight: 800; cursor: pointer;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="ov" class="modal">
+    <div class="bx">
+        <h2 style="margin:0 0 20px 0;">BLAZE <span style="color:var(--accent)">CORE</span></h2>
+        <input type="text" id="un" placeholder="Ник..." style="width:100%; margin-bottom:20px;">
+        <button onclick="L()">ВОЙТИ</button>
+    </div>
+</div>
+
+<div id="m-on" class="modal" onclick="this.style.display='none'">
+    <div class="bx" onclick="event.stopPropagation()">
+        <h3 style="margin:0 0 15px 0;">В СЕТИ</h3>
+        <div id="list-u"></div>
+    </div>
+</div>
+
+<header>
+    <div class="h-title">BLAZE SECURE</div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="on-btn" onclick="showOnline()">• <span id="on-p">0</span></div>
+        <div onclick="LO()" style="cursor:pointer; font-size: 20px; opacity: 0.5;">✕</div>
+    </div>
+</header>
+
+<div id="chat"></div>
+
+<div id="ia">
+    <input type="text" id="mi" placeholder="Сообщение..." autocomplete="off">
+    <button class="s-btn" onclick="S()">➤</button>
+</div>
+
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
+<script>
+var _0x=["\x64\x65\x6D\x6F","\x42\x4C\x41\x5A\x45\x20\x4F\x46\x46\x49\x43\x49\x41\x4C","\x42\x4C\x41\x5A\x45\x2E\x70\x6E\x67","\x76\x65\x72\x69\x66\x69\x65\x64\x2E\x70\x6E\x67","\x62\x6C\x61\x7A\x65\x5F\x76\x39","\x62\x6C\x5F\x75\x6E","\x62\x6C\x5F\x61\x76"];
+let _uD={n:"",a:"",v:false};
+const _pn=new PubNub({publishKey:_0x[0],subscribeKey:_0x[0],uuid:''+Math.floor(Math.random()*1e7)});
+
+function L(_n){
+    let n=_n||document.getElementById('\x75\x6E').value.trim();
+    if(!n)return;
+    localStorage.setItem(_0x[5],n);
+    if(n.toLowerCase()==='\x62\x6C\x61\x7A\x65'){
+        _uD={n:_0x[1],a:localStorage.getItem(_0x[6])||_0x[2],v:true};
+    }else{
+        _uD={n:n,a:localStorage.getItem(_0x[6])||"https://ui-avatars.com/api/?background=333&color=fff&name="+n,v:false};
+    }
+    document.getElementById('\x6F\x76').style.display='\x6E\x6F\x6E\x65';
+    _pn.subscribe({channels:[_0x[4]],withPresence:true});
+    _pn.setState({state:{nick:_uD.n},channels:[_0x[4]]});
+}
+
+function S(){
+    const i=document.getElementById('\x6D\x69');
+    if(!i.value.trim())return;
+    _pn.publish({channel:_0x[4],message:{user:_uD.n,avatar:_uD.a,verified:_uD.v,text:i.value}});
+    i.value='';
+}
+
+function R(m){
+    const chat=document.getElementById('\x63\x68\x61\x74');
+    const div=document.createElement('\x64\x69\x76');
+    const isMe = m.user === _uD.n;
+    div.className = 'm' + (m.user === _0x[1] ? ' my' : '');
+    div.innerHTML = `
+        <img src="${m.avatar}" class="av" onclick="${isMe?'CA()':''}">
+        <div class="bb" onclick="document.getElementById('mi').value='@${m.user}, '; document.getElementById('mi').focus()">
+            <span class="nk">${m.user} ${m.verified ? `<img src="${_0x[3]}" class="vi">` : ''}</span>
+            <div style="font-size:14px; user-select:text;">${m.text}</div>
+        </div>`;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function showOnline(){
+    _pn.hereNow({channels:[_0x[4]],includeState:true},(s,r)=>{
+        const list=document.getElementById('list-u');
+        list.innerHTML='';
+        r.channels[_0x[4]].occupants.forEach(o=>{
+            list.innerHTML+=`<div style="padding:10px; color:var(--green)">● ${o.state?.nick||'Аноним'}</div>`;
+        });
+        document.getElementById('m-on').style.display='flex';
+    });
+}
+
+_pn.addListener({
+    message:s=>R(s.message),
+    presence:p=>document.getElementById('on-p').innerText=p.occupancy
+});
+
+function LO(){localStorage.clear();location.reload()}
+function CA(){const n=prompt("URL фото:"); if(n){localStorage.setItem(_0x[6],n); location.reload()}}
+
+window.onload=()=>{
+    const s=localStorage.getItem(_0x[5]);
+    if(s)L(s);else document.getElementById('\x6F\x76').style.display='flex';
+};
+document.getElementById('\x6D\x69').onkeypress=(e)=>{if(e.key==='Enter')S()};
+</script>
+</body>
+</html>
